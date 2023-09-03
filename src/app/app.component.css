@@ -1,0 +1,48 @@
+
+:host {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(180deg, #191D47 0%, rgba(43.14, 174.28, 215.69, 0.84) 100%);
+}
+
+
+
+.wet-bulb__temp-wrap {
+  height: 83px;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 13px;
+  display: flex
+}
+
+
+.wet-bulb__temp {
+  color: white;
+  font-size: 64px;
+  font-family: IBM Plex Sans;
+  font-weight: 400;
+  word-wrap: break-word
+}
+
+
+.wet-bulb__emoji {
+  color: white;
+  font-size: 62px;
+  font-family: IBM Plex Sans;
+  font-weight: 400;
+  word-wrap: break-word;
+}
+
+
+.wet-bulb__blurb {
+  width: 268px;
+  left: 51px;
+  top: 344px;
+  position: absolute;
+  color: white;
+  font-size: 20px;
+  font-family: IBM Plex Sans;
+  font-weight: 400;
+  word-wrap: break-word;
+}
