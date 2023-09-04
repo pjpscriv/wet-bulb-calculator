@@ -7,14 +7,170 @@
 }
 
 
+/* TEMPERATURE SLIDER */
+.wet-bulb__temp-slider-section {
+  width: 256px;
+  left: 51px;
+  top: 84.50px;
+  position: absolute;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 16px;
+  display: inline-flex;
+}
 
-.wet-bulb__temp-wrap {
+
+.wet-bulb__temp-slider-label {
+  width: 31px;
+  height: 13px;
+  color: rgba(43.14, 153.57, 215.69, 0.84);
+  font-size: 11px;
+  font-family: IBM Plex Sans;
+  font-weight: 400;
+  word-wrap: break-word;
+}
+
+
+.wet-bulb__temp-slider {
+  width: 273px;
+  height: 26px;
+  position: relative;
+}
+
+
+.wet-bulb__temp-slider-line {
+  width: 215px;
+  height: 0px;
+  left: 0px;
+  top: 13.50px;
+  position: absolute;
+  border: 1.25px white solid;
+}
+
+
+.wet-bulb__temp-slider-dot {
+  width: 15px;
+  height: 15px;
+  left: 69px;
+  top: 6px;
+  position: absolute;
+  background: white;
+  border-radius: 9999px
+}
+
+
+.wet-bulb__temp-slider-value {}
+
+
+
+
+/* HUMIDITY SLIDER */
+.wet-bulb__humidity-slider-section {
+  width: 256px;
+  left: 51px;
+  top: 138px;
+  position: absolute;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 16px;
+  display: inline-flex;
+}
+
+
+.wet-bulb__humidity-slider-label {
+  color: rgba(43.14, 153.57, 215.69, 0.84);
+  font-size: 11px;
+  font-family: IBM Plex Sans;
+  font-weight: 400;
+  word-wrap: break-word;
+}
+
+
+.wet-bulb__humidity-slider {
+  width: 270px;
+  height: 26px;
+  position: relative;
+}
+
+
+.wet-bulb__humidity-slider-line {
+  width: 215px;
+  height: 0px;
+  left: 0px;
+  top: 13.50px;
+  position: absolute;
+  border: 1.25px white solid;
+}
+
+
+.wet-bulb__humidity-slider-dot{
+  width: 15px;
+  height: 15px;
+  left: 69px;
+  top: 6px;
+  position: absolute;
+  background: white;
+  border-radius: 9999px;
+}
+
+
+.wet-bulb__humidity-slider-value {
+  left: 227px;
+  top: 0px;
+  position: absolute;
+  color: white;
+  font-size: 20px;
+  font-family: IBM Plex Sans;
+  font-weight: 400;
+  word-wrap: break-word;
+}
+
+
+
+
+/* BIG TEMPERATURE SECTION */
+.wet-bulb__temp-slider-value {
+  left: 227px;
+  top: 0px;
+  position: absolute;
+  color: white;
+  font-size: 20px;
+  font-family: IBM Plex Sans;
+  font-weight: 400;
+  word-wrap: break-word;
+}
+
+
+.wet-bulb__temp-section {
+  width: 167px;
+  left: 51px;
+  top: 224px;
+  position: absolute;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 2px;
+  display: inline-flex
+}
+
+
+.wet-bulb__temp-label {
+  color: rgba(43.14, 153.57, 215.69, 0.84);
+  font-size: 11px;
+  font-family: IBM Plex Sans;
+  font-weight: 400;
+  word-wrap: break-word
+}
+
+
+
+.wet-bulb__temp-wrapper {
   height: 83px;
   justify-content: flex-start;
   align-items: center;
   gap: 13px;
   display: flex
 }
+
 
 
 .wet-bulb__temp {
@@ -26,6 +182,7 @@
 }
 
 
+
 .wet-bulb__emoji {
   color: white;
   font-size: 62px;
@@ -33,6 +190,7 @@
   font-weight: 400;
   word-wrap: break-word;
 }
+
 
 
 .wet-bulb__blurb {
