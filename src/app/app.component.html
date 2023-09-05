@@ -1,22 +1,30 @@
 <div>
 
-  <div class="wet-bulb__temp-slider-section">
-    <div class="wet-bulb__temp-slider-label">TEMP</div>
-    <div class="wet-bulb__temp-slider">
-      <div class="wet-bulb__temp-slider-line"></div>
-      <div class="wet-bulb__temp-slider-value">15°C</div>
-      <div class="wet-bulb__temp-slider-dot"></div>
+  <form #inputs="ngForm" class="wet-bulb__form">
+    <div class="wet-bulb__temp-slider-section">
+      <div class="wet-bulb__temp-slider-label">TEMP</div>
+      <div class="wet-bulb__temp-slider">
+        <div class="wet-bulb__temp-slider-line"></div>
+        <div class="wet-bulb__temp-slider-value">15°C</div>
+        <div class="wet-bulb__temp-slider-dot"></div>
+      </div>
     </div>
-  </div>
 
-  <div class="wet-bulb__humidity-slider-section">
-    <div class="wet-bulb__humidity-slider-label">HUMIDITY</div>
-    <div class="wet-bulb__humidity-slider">
-      <div class="wet-bulb__humidity-slider-line"></div>
-      <div class="wet-bulb__humidity-slider-value">46%</div>
-      <div class="wet-bulb__humidity-slider-dot"></div>
+    <div class="wet-bulb__humidity-slider-section">
+      <div class="wet-bulb__humidity-slider-label">HUMIDITY</div>
+      <div class="wet-bulb__humidity-slider">
+
+        <label>
+          <input name="humidity" [(ngModel)]="humidity" type="range" min="0" max="60" >
+        </label>
+
+
+        <div class="wet-bulb__humidity-slider-line"></div>
+        <div class="wet-bulb__humidity-slider-value">46%</div>
+        <div class="wet-bulb__humidity-slider-dot"></div>
+      </div>
     </div>
-  </div>
+  </form>
 
   <div class="wet-bulb__temp-section">
     <div class="wet-bulb__temp-label">WET BULB TEMP</div>
