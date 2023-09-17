@@ -1,42 +1,51 @@
-<div>
-
-  <form #inputs="ngForm" class="wet-bulb__form">
-    <div class="wet-bulb__temp-slider-section">
-      <div class="wet-bulb__temp-slider-label">TEMP</div>
-      <div class="wet-bulb__temp-slider">
-        <div class="wet-bulb__temp-slider-line"></div>
-        <div class="wet-bulb__temp-slider-value">15°C</div>
-        <div class="wet-bulb__temp-slider-dot"></div>
-      </div>
-    </div>
-
-    <div class="wet-bulb__humidity-slider-section">
-      <div class="wet-bulb__humidity-slider-label">HUMIDITY</div>
-      <div class="wet-bulb__humidity-slider">
-
-        <label>
-          <input name="humidity" [(ngModel)]="humidity" type="range" min="0" max="60" >
-        </label>
-
-
-        <div class="wet-bulb__humidity-slider-line"></div>
-        <div class="wet-bulb__humidity-slider-value">46%</div>
-        <div class="wet-bulb__humidity-slider-dot"></div>
-      </div>
-    </div>
-  </form>
-
-  <div class="wet-bulb__temp-section">
-    <div class="wet-bulb__temp-label">WET BULB TEMP</div>
-    <div class="wet-bulb__temp-wrapper">
-      <div class="wet-bulb__temp">13°C</div>
-      <div class="wet-bulb__emoji">😎</div>
-    </div>
-  </div>
-
-  <div class="wet-bulb__blurb">
-    The wet-bulb temperature is within the safe range.<br/>
-    Your powers of evaporative cooling will still be working perfectly.
-  </div>
-
+<div class="wet-bulb__header">
+  <h1>WET BULB TEMPERATURE CALCULATOR</h1>
+  <p>Originally inspired by <a href="https://www.omnicalculator.com/physics/wet-bulb">Julia Żuławińska’s</a> wet bulb calculator</p>
+  <p>This wet bulb calculator is designed to help you estimate the wet bulb temperature based on only two pieces of data - the temperature 🌡️ and the relative humidity 💧.</p>
 </div>
+
+
+<!-- INPUTS -->
+<form #inputs="ngForm" class="wet-bulb__inputs">
+
+  <div class="wet-bulb__temp-slider-section">
+    <label class="wet-bulb__temp-slider-label">
+      TEMP
+      <input
+        class="wet-bulb__slider-input"
+        name="temperature"
+        [(ngModel)]="temperature"
+        type="range"
+        min="-20" max="60" >
+    </label>
+    <p class="wet-bulb__temp-slider-value">{{temperature}}°C</p>
+  </div>
+
+  <div class="wet-bulb__humidity-slider-section">
+    <label class="wet-bulb__humidity-slider-label">
+      HUMIDITY
+      <input
+        class="wet-bulb__slider-input"
+        name="humidity"
+        [(ngModel)]="humidity"
+        type="range"
+        min="5" max="99">
+    </label>
+    <p class="wet-bulb__humidity-slider-value">{{humidity}}%</p>
+  </div>
+
+</form>
+
+<!-- OUTPUT -->
+<div class="wet-bulb__outputs">
+  <div class="wet-bulb__temp-label">WET BULB TEMP</div>
+  <div class="wet-bulb__temp-wrapper">
+    <div class="wet-bulb__temp">{{wetBulbTemp$ | async}}°C</div>
+    <div class="wet-bulb__emoji">{{emoji$ | async}}</div>
+  </div>
+  <div class="wet-bulb__blurb">
+    <p *ngFor="let sentence of (blurb$ | async)">{{sentence}}</p>
+  </div>
+</div>
+
+

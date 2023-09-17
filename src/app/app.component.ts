@@ -1,39 +1,116 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
-import { Subject, tap } from 'rxjs';
+import { Component, HostBinding, OnInit, ViewChild } from '@angular/core';
+import { map, Observable, tap, filter } from 'rxjs';
 import { NgForm } from '@angular/forms';
+import { Situation, TempUnit } from './app.types';
 
 @Component({
-  selector: 'app-root',
+  selector: 'wet-bulb',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit, AfterViewInit {
+export class AppComponent implements OnInit {
 
   // @ts-ignore
   @ViewChild('inputs',{static: true}) ngForm: NgForm;
 
-  title = 'wet-bulb'
-  humidity = 15;
+  @HostBinding('style.background') gradient: string = 'linear-gradient(180deg, #191D47 0%, rgba(43.14, 174.28, 215.69, 0.84) 100%)';
 
-  constructor() {
+  // Blurbs
+  normalTempBlurb: Array<string> = [
+    "The wet-bulb temperature is within the safe range.",
+    "Your powers of evaporative cooling will still be working perfectly."
+  ];
+  dangerousTempBlurb: Array<string> = [
+    "Wet-bulb temperatures above 30 °C (86 °F) pose potential fatal danger to humans outside.",
+    "It's also very uncomfortable. In these conditions, you should avoid direct sunlight and drink lots of water."
+  ];
+  fatalTempBlurb: Array<string> = [
+    "Theoretically, humans cannot survive for very long when the wet-bulb temperature exceeds 35 °C (95 °F).",
+    "If that's what you're experiencing, go to a place with air conditioning and drink lots of water as soon as possible."
+  ]
 
-  }
+  // Form values (Inputs)
+  public temperature: number = 10;
+  public humidity: number = 50;
+  public tempUnits: TempUnit = "celsius";
 
+  // Outputs
+  public wetBulbTemp$: Observable<number>;
+  public blurb$: Observable<Array<string>>;
+  public emoji$: Observable<string>;
 
-  humidity$ = new Subject();
+  // Config
+  private dp: number = 0;
 
   public ngOnInit(): void {
-    this.humidity$.pipe(
-      tap(v => console.log(`Humidity: ${v}`))
+    // @ts-ignore
+    this.wetBulbTemp$ = this.ngForm.valueChanges.pipe(
+      filter(v => !!v),
+      tap(console.log),
+      map((f:any) => this.wetBulbTemperature(f.temperature, f.humidity))
+    );
+
+    // TODO: Will need to incorporate temperature units in here
+    let situation$: Observable<Situation> = this.wetBulbTemp$.pipe(
+      map(this.wetBulbTempToSituation),
+      tap(s => {
+        if (s === 'safe') {
+          this.gradient = 'linear-gradient(180deg, #191D47 0%, rgba(43.14, 174.28, 215.69, 0.84) 100%)';
+        } else if (s === 'dangerous') {
+          this.gradient = 'linear-gradient(180deg, #FFBA52 0%, #FF5252 100%)';
+        } else {
+          this.gradient = 'linear-gradient(180deg, #FF5252 0%, #9747FF 100%)';
+        }
+      })
+    );
+
+    this.blurb$ = situation$.pipe(
+      map(s => {
+        if (s === 'safe') {
+          return this.normalTempBlurb;
+        } else if (s === 'dangerous') {
+          return this.dangerousTempBlurb;
+        } else {
+          return this.fatalTempBlurb;
+        }
+      })
     )
+
+    this.emoji$ = situation$.pipe(
+      map(s => {
+        if (s === 'safe') {
+          return '😎'
+        } else if (s === 'dangerous') {
+          return '🥵';
+        } else {
+          return '💀';
+        }
+      })
+    );
+
   }
 
-  public ngAfterViewInit(): void {
-    // @ts-ignore
-    this.ngForm.valueChanges.subscribe(form => {
-      console.log(form);
-      // this.updated = form;
-    })
+  // Assuming temp is Celsius atm
+  private wetBulbTemperature(temp: number, humidity: number): number {
+
+    const const1: number = 0.151977;
+    const const2: number = 8.313659;
+    const const3: number = 1.676331;
+    const const4: number = 0.00391838;
+    const const5: number = 0.023101;
+    const const6: number = 4.686035;
+
+    const part1: number = temp * const1 * ((humidity + const2) ** .5)
+    const part2: number = Math.atan(temp + humidity) - Math.atan(humidity - const3);
+    const part3: number = const4 * (humidity ** 1.5) * Math.atan(const5 * humidity);
+
+    // return Math.floor(part1 + part2 + part3 - const6);
+    return Math.floor((part1 + part2 + part3 - const6) * (10**this.dp)) / (10**this.dp);
+  }
+
+
+  private wetBulbTempToSituation(temp: number): Situation {
+    return temp < 30 ? 'safe' : (temp > 35 ? 'fatal' : 'dangerous')
   }
 
 }
