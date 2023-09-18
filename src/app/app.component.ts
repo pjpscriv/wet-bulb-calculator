@@ -2,6 +2,7 @@ import { Component, HostBinding, OnInit, ViewChild } from '@angular/core';
 import { map, Observable, tap, filter } from 'rxjs';
 import { NgForm } from '@angular/forms';
 import { Situation, TempUnit } from './app.types';
+import { COLD_TEMP_BLURB, DANGEROUS_TEMP_BLURB, FATAL_TEMP_BLURB, SAFE_TEMP_BLURB } from './app.constants';
 
 @Component({
   selector: 'wet-bulb',
@@ -12,22 +13,7 @@ export class AppComponent implements OnInit {
 
   // @ts-ignore
   @ViewChild('inputs',{static: true}) ngForm: NgForm;
-
   @HostBinding('style.background') gradient: string = 'linear-gradient(180deg, #191D47 0%, rgba(43.14, 174.28, 215.69, 0.84) 100%)';
-
-  // Blurbs
-  normalTempBlurb: Array<string> = [
-    "The wet-bulb temperature is within the safe range.",
-    "Your powers of evaporative cooling will still be working perfectly."
-  ];
-  dangerousTempBlurb: Array<string> = [
-    "Wet-bulb temperatures above 30 °C (86 °F) pose potential fatal danger to humans outside.",
-    "It's also very uncomfortable. In these conditions, you should avoid direct sunlight and drink lots of water."
-  ];
-  fatalTempBlurb: Array<string> = [
-    "Theoretically, humans cannot survive for very long when the wet-bulb temperature exceeds 35 °C (95 °F).",
-    "If that's what you're experiencing, go to a place with air conditioning and drink lots of water as soon as possible."
-  ]
 
   // Form values (Inputs)
   public temperature: number = 10;
@@ -46,7 +32,6 @@ export class AppComponent implements OnInit {
     // @ts-ignore
     this.wetBulbTemp$ = this.ngForm.valueChanges.pipe(
       filter(v => !!v),
-      tap(console.log),
       map((f:any) => this.wetBulbTemperature(f.temperature, f.humidity))
     );
 
@@ -54,40 +39,43 @@ export class AppComponent implements OnInit {
     let situation$: Observable<Situation> = this.wetBulbTemp$.pipe(
       map(this.wetBulbTempToSituation),
       tap(s => {
-        if (s === 'safe') {
-          this.gradient = 'linear-gradient(180deg, #191D47 0%, rgba(43.14, 174.28, 215.69, 0.84) 100%)';
+        if (s === 'fatal') {
+          this.gradient = 'linear-gradient(180deg, #FF5252 0%, #9747FF 100%)';
         } else if (s === 'dangerous') {
           this.gradient = 'linear-gradient(180deg, #FFBA52 0%, #FF5252 100%)';
         } else {
-          this.gradient = 'linear-gradient(180deg, #FF5252 0%, #9747FF 100%)';
+          this.gradient = 'linear-gradient(180deg, #191D47 0%, rgba(43.14, 174.28, 215.69, 0.84) 100%)';
         }
       })
     );
 
     this.blurb$ = situation$.pipe(
       map(s => {
-        if (s === 'safe') {
-          return this.normalTempBlurb;
+        if (s === 'fatal') {
+          return FATAL_TEMP_BLURB;
         } else if (s === 'dangerous') {
-          return this.dangerousTempBlurb;
+          return DANGEROUS_TEMP_BLURB;
+        } else if (s === 'safe') {
+          return SAFE_TEMP_BLURB;
         } else {
-          return this.fatalTempBlurb;
+          return COLD_TEMP_BLURB;
         }
       })
     )
 
     this.emoji$ = situation$.pipe(
       map(s => {
-        if (s === 'safe') {
-          return '😎'
+        if (s === 'fatal') {
+          return '💀'
         } else if (s === 'dangerous') {
           return '🥵';
+        } else if (s === 'safe') {
+          return '😎';
         } else {
-          return '💀';
+          return '🥶'
         }
       })
     );
-
   }
 
   // Assuming temp is Celsius atm
@@ -104,13 +92,11 @@ export class AppComponent implements OnInit {
     const part2: number = Math.atan(temp + humidity) - Math.atan(humidity - const3);
     const part3: number = const4 * (humidity ** 1.5) * Math.atan(const5 * humidity);
 
-    // return Math.floor(part1 + part2 + part3 - const6);
     return Math.floor((part1 + part2 + part3 - const6) * (10**this.dp)) / (10**this.dp);
   }
 
-
   private wetBulbTempToSituation(temp: number): Situation {
-    return temp < 30 ? 'safe' : (temp > 35 ? 'fatal' : 'dangerous')
+    return temp < 30 ? ( temp > -10 ? 'safe' : 'cold') : (temp > 35 ? 'fatal' : 'dangerous')
   }
 
 }

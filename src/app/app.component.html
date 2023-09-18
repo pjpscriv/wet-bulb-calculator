@@ -1,37 +1,38 @@
+<!-- HEADER -->
 <div class="wet-bulb__header">
   <h1>WET BULB TEMPERATURE CALCULATOR</h1>
-  <p>Originally inspired by <a href="https://www.omnicalculator.com/physics/wet-bulb">Julia Żuławińska’s</a> wet bulb calculator</p>
-  <p>This wet bulb calculator is designed to help you estimate the wet bulb temperature based on only two pieces of data - the temperature 🌡️ and the relative humidity 💧.</p>
+  <div class="wet-bulb__header-subtitle">
+    <p>Originally inspired by <a href="https://www.omnicalculator.com/physics/wet-bulb">Julia Żuławińska’s</a> wet bulb calculator</p>
+    <p>This wet bulb calculator is designed to help you estimate the wet bulb temperature based on only two pieces of data - the temperature 🌡️ and the relative humidity 💧.</p>
+  </div>
 </div>
 
 
 <!-- INPUTS -->
 <form #inputs="ngForm" class="wet-bulb__inputs">
 
-  <div class="wet-bulb__temp-slider-section">
-    <label class="wet-bulb__temp-slider-label">
-      TEMP
-      <input
-        class="wet-bulb__slider-input"
+  <div class="wet-bulb__input">
+    <div class="wet-bulb__input-label">TEMP</div>
+    <div class="wet-bulb_input-group">
+      <p class="wet-bulb__input-text">{{temperature}}°C</p>
+      <input class="wet-bulb__input-slider"
         name="temperature"
         [(ngModel)]="temperature"
         type="range"
         min="-20" max="60" >
-    </label>
-    <p class="wet-bulb__temp-slider-value">{{temperature}}°C</p>
+    </div>
   </div>
 
-  <div class="wet-bulb__humidity-slider-section">
-    <label class="wet-bulb__humidity-slider-label">
-      HUMIDITY
-      <input
-        class="wet-bulb__slider-input"
+  <div class="wet-bulb__input">
+    <div class="wet-bulb__input-label">HUMIDITY</div>
+    <div class="wet-bulb_input-group">
+      <p class="wet-bulb__input-text">{{humidity}}%</p>
+      <input class="wet-bulb__input-slider"
         name="humidity"
         [(ngModel)]="humidity"
         type="range"
         min="5" max="99">
-    </label>
-    <p class="wet-bulb__humidity-slider-value">{{humidity}}%</p>
+    </div>
   </div>
 
 </form>
@@ -47,5 +48,3 @@
     <p *ngFor="let sentence of (blurb$ | async)">{{sentence}}</p>
   </div>
 </div>
-
-
