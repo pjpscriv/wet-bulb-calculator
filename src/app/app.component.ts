@@ -98,5 +98,4 @@ export class AppComponent implements OnInit {
   private wetBulbTempToSituation(temp: number): Situation {
     return temp < 30 ? ( temp > -10 ? 'safe' : 'cold') : (temp > 35 ? 'fatal' : 'dangerous')
   }
-
 }
