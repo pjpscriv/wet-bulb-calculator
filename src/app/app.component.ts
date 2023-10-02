@@ -7,13 +7,13 @@ import { COLD_TEMP_BLURB, DANGEROUS_TEMP_BLURB, FATAL_TEMP_BLURB, SAFE_TEMP_BLUR
 @Component({
   selector: 'wet-bulb',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
 
   // @ts-ignore
   @ViewChild('inputs',{static: true}) ngForm: NgForm;
-  @HostBinding('style.background') gradient: string = 'linear-gradient(180deg, #191D47 0%, rgba(43.14, 174.28, 215.69, 0.84) 100%)';
+  // @HostBinding('style.background') gradient: string = 'red'; //'linear-gradient(180deg, #191D47 0%, rgba(43.14, 174.28, 215.69, 0.84) 100%)';
 
   // Form values (Inputs)
   public temperature: number = 10;
@@ -24,6 +24,8 @@ export class AppComponent implements OnInit {
   public wetBulbTemp$: Observable<number>;
   public blurb$: Observable<Array<string>>;
   public emoji$: Observable<string>;
+  public $fatalOpacity: Observable<number>;
+  public $dangerousOpacity: Observable<number>;
 
   // Config
   private dp: number = 0;
@@ -35,19 +37,32 @@ export class AppComponent implements OnInit {
       map((f:any) => this.wetBulbTemperature(f.temperature, f.humidity))
     );
 
+    this.$fatalOpacity = this.wetBulbTemp$.pipe(
+      map(t => 0.2 * (t - 30)),
+      map(v => v <= 0 ? 0 : v >= 1 ? 1 : v)
+    )
+
+    this.$dangerousOpacity = this.wetBulbTemp$.pipe(
+      map(t => 0.1 * (t - 20)),
+      map(v => v <= 0 ? 0 : v >= 1 ? 1 : v)
+    )
+
     // TODO: Will need to incorporate temperature units in here
     let situation$: Observable<Situation> = this.wetBulbTemp$.pipe(
-      map(this.wetBulbTempToSituation),
-      tap(s => {
-        if (s === 'fatal') {
-          this.gradient = 'linear-gradient(180deg, #FF5252 0%, #9747FF 100%)';
-        } else if (s === 'dangerous') {
-          this.gradient = 'linear-gradient(180deg, #FFBA52 0%, #FF5252 100%)';
-        } else {
-          this.gradient = 'linear-gradient(180deg, #191D47 0%, rgba(43.14, 174.28, 215.69, 0.84) 100%)';
-        }
-      })
+      map(this.wetBulbTempToSituation)
     );
+
+    // situation$.pipe(
+    //   tap(s => {
+    //     if (s === 'fatal') {
+    //       this.gradient = 'linear-gradient(180deg, #FF5252 0%, #9747FF 100%)';
+    //     } else if (s === 'dangerous') {
+    //       this.gradient = 'linear-gradient(180deg, #FFBA52 0%, #FF5252 100%)';
+    //     } else {
+    //       this.gradient = 'linear-gradient(180deg, #191D47 0%, rgba(43.14, 174.28, 215.69, 0.84) 100%)';
+    //     }
+    //   })
+    // );
 
     this.blurb$ = situation$.pipe(
       map(s => {
