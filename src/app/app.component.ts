@@ -16,7 +16,7 @@ export class AppComponent implements OnInit {
   // @HostBinding('style.background') gradient: string = 'red'; //'linear-gradient(180deg, #191D47 0%, rgba(43.14, 174.28, 215.69, 0.84) 100%)';
 
   // Form values (Inputs)
-  public temperature: number = 10;
+  public temperature: number = 20;
   public humidity: number = 50;
   public tempUnits: TempUnit = "celsius";
 
@@ -28,7 +28,7 @@ export class AppComponent implements OnInit {
   public $dangerousOpacity: Observable<number>;
 
   // Config
-  private dp: number = 0;
+  private dp: number = 1;
 
   public ngOnInit(): void {
     // @ts-ignore

@@ -24,19 +24,29 @@
   <div class="wet-bulb__input">
     <div class="wet-bulb__input-label">TEMP</div>
     <div class="wet-bulb_input-group">
-      <p class="wet-bulb__input-text">{{temperature}}°C</p>
+      <input class="wet-bulb__input-text"
+        [(ngModel)]="temperature"
+        type="text"
+        name="temperature"
+        min="15" max="60">
+      <p class="wet-bulb__input-text">°C</p>
       <input class="wet-bulb__input-slider"
         name="temperature"
         [(ngModel)]="temperature"
         type="range"
-        min="-20" max="60" >
+        min="15" max="60">
     </div>
   </div>
 
   <div class="wet-bulb__input">
     <div class="wet-bulb__input-label">HUMIDITY</div>
     <div class="wet-bulb_input-group">
-      <p class="wet-bulb__input-text">{{humidity}}%</p>
+      <input class="wet-bulb__input-text"
+       name="humidity"
+       [(ngModel)]="humidity"
+       type="text"
+       min="5" max="99">
+      <p class="wet-bulb__input-text">%</p>
       <input class="wet-bulb__input-slider"
         name="humidity"
         [(ngModel)]="humidity"
@@ -51,7 +61,7 @@
 <div class="wet-bulb__outputs">
   <div class="wet-bulb__temp-label">WET BULB TEMP</div>
   <div class="wet-bulb__temp-wrapper">
-    <div class="wet-bulb__temp">{{wetBulbTemp$ | async}}°C</div>
+    <div class="wet-bulb__temp">{{wetBulbTemp$ | async | number:'1.1'}}°C</div>
     <div class="wet-bulb__emoji">{{emoji$ | async}}</div>
   </div>
   <div class="wet-bulb__blurb">
