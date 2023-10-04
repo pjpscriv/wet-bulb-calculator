@@ -103,7 +103,7 @@ export class AppComponent implements OnInit {
     const const5: number = 0.023101;
     const const6: number = 4.686035;
 
-    const part1: number = temp * const1 * ((humidity + const2) ** .5)
+    const part1: number = temp * Math.atan(const1 * ((humidity + const2) ** .5));
     const part2: number = Math.atan(temp + humidity) - Math.atan(humidity - const3);
     const part3: number = const4 * (humidity ** 1.5) * Math.atan(const5 * humidity);
 
