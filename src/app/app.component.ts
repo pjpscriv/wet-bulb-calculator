@@ -1,7 +1,7 @@
-import { Component, HostBinding, OnInit, ViewChild } from '@angular/core';
-import { map, Observable, tap, filter } from 'rxjs';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { filter, map, tap, pairwise, Observable, shareReplay } from 'rxjs';
 import { NgForm } from '@angular/forms';
-import { Situation, TempUnit } from './app.types';
+import { HumidUnit, Situation, TempUnit } from './app.types';
 import { COLD_TEMP_BLURB, DANGEROUS_TEMP_BLURB, FATAL_TEMP_BLURB, SAFE_TEMP_BLURB } from './app.constants';
 
 @Component({
@@ -19,6 +19,7 @@ export class AppComponent implements OnInit {
   public temperature: number = 20;
   public humidity: number = 50;
   public tempUnits: TempUnit = "celsius";
+  public humidUnits: HumidUnit = "relativeHumidity";
 
   // Outputs
   public wetBulbTemp$: Observable<number>;
@@ -34,35 +35,29 @@ export class AppComponent implements OnInit {
     // @ts-ignore
     this.wetBulbTemp$ = this.ngForm.valueChanges.pipe(
       filter(v => !!v),
-      map((f:any) => this.wetBulbTemperature(f.temperature, f.humidity))
+      pairwise(),
+      // tap(v => console.log("Form change", v)),
+      map(([f_old, f]: [any, any]) => this.wetBulbTemperature(f.temperature, f.humidity)),
+      shareReplay()
     );
 
     this.$fatalOpacity = this.wetBulbTemp$.pipe(
       map(t => 0.2 * (t - 30)),
-      map(v => v <= 0 ? 0 : v >= 1 ? 1 : v)
+      map(v => v <= 0 ? 0 : v >= 1 ? 1 : v),
+      shareReplay()
     )
 
     this.$dangerousOpacity = this.wetBulbTemp$.pipe(
       map(t => 0.1 * (t - 20)),
-      map(v => v <= 0 ? 0 : v >= 1 ? 1 : v)
+      map(v => v <= 0 ? 0 : v >= 1 ? 1 : v),
+      shareReplay()
     )
 
     // TODO: Will need to incorporate temperature units in here
     let situation$: Observable<Situation> = this.wetBulbTemp$.pipe(
-      map(this.wetBulbTempToSituation)
+      map(this.wetBulbTempToSituation),
+      shareReplay()
     );
-
-    // situation$.pipe(
-    //   tap(s => {
-    //     if (s === 'fatal') {
-    //       this.gradient = 'linear-gradient(180deg, #FF5252 0%, #9747FF 100%)';
-    //     } else if (s === 'dangerous') {
-    //       this.gradient = 'linear-gradient(180deg, #FFBA52 0%, #FF5252 100%)';
-    //     } else {
-    //       this.gradient = 'linear-gradient(180deg, #191D47 0%, rgba(43.14, 174.28, 215.69, 0.84) 100%)';
-    //     }
-    //   })
-    // );
 
     this.blurb$ = situation$.pipe(
       map(s => {
@@ -76,7 +71,7 @@ export class AppComponent implements OnInit {
           return COLD_TEMP_BLURB;
         }
       })
-    )
+    );
 
     this.emoji$ = situation$.pipe(
       map(s => {

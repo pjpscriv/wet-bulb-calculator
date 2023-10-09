@@ -79,10 +79,28 @@ wet-bulb:host {
   align-items: center;
 }
 
-.wet-bulb__input-text {
+.wet-bulb__input-number {
   font-size: 20px;
   margin: 2px;
-  width: 3em;
+  width: 1.2em;
+  border: none;
+  background: transparent;
+  color: white;
+
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    display: none;
+  }
+}
+
+.wet-bulb__input-unit {
+  font-size: 20px;
+  margin: 2px 8px 2px 2px;
+  width: 2.5em;
+  background: transparent;
+  color: white;
+  border: none;
+  border-bottom: white 1px solid;
 }
 
 .wet-bulb__input-slider {
@@ -90,7 +108,7 @@ wet-bulb:host {
   width: 256px; /* 270px or 215px */
   height: 2px;
   color: white;
-  max-width: 70%;
+  max-width: 50vw;
 
   &::-webkit-slider-thumb {
     -webkit-appearance: none;

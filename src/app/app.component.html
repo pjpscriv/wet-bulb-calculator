@@ -3,7 +3,7 @@
      [style.opacity]="$fatalOpacity | async">
 </div>
 <div class="wet-bulb__background--dangerous"
-  [style.opacity]="$dangerousOpacity| async">
+  [style.opacity]="$dangerousOpacity | async">
 </div>
 <div class="wet-bulb__background"></div>
 
@@ -24,12 +24,17 @@
   <div class="wet-bulb__input">
     <div class="wet-bulb__input-label">TEMP</div>
     <div class="wet-bulb_input-group">
-      <input class="wet-bulb__input-text"
+      <input class="wet-bulb__input-number"
         [(ngModel)]="temperature"
-        type="text"
+        type="number"
         name="temperature"
         min="15" max="60">
-      <p class="wet-bulb__input-text">°C</p>
+      <select class="wet-bulb__input-unit"
+        name="tempUnits"
+        [(ngModel)]="tempUnits">
+        <option value="celsius">°C</option>
+        <option value="fahrenheit">°F</option>
+      </select>
       <input class="wet-bulb__input-slider"
         name="temperature"
         [(ngModel)]="temperature"
@@ -41,12 +46,16 @@
   <div class="wet-bulb__input">
     <div class="wet-bulb__input-label">HUMIDITY</div>
     <div class="wet-bulb_input-group">
-      <input class="wet-bulb__input-text"
+      <input class="wet-bulb__input-number"
        name="humidity"
        [(ngModel)]="humidity"
-       type="text"
+       type="number"
        min="5" max="99">
-      <p class="wet-bulb__input-text">%</p>
+      <select class="wet-bulb__input-unit"
+        name="humidUnits"
+        [(ngModel)]="humidUnits">
+        <option value="relativeHumidity">%</option>
+      </select>
       <input class="wet-bulb__input-slider"
         name="humidity"
         [(ngModel)]="humidity"
