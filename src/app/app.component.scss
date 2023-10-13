@@ -82,7 +82,7 @@ wet-bulb:host {
 .wet-bulb__input-number {
   font-size: 20px;
   margin: 2px;
-  width: 1.2em;
+  //width: 1.2em;
   border: none;
   background: transparent;
   color: white;
@@ -101,6 +101,10 @@ wet-bulb:host {
   color: white;
   border: none;
   border-bottom: white 1px solid;
+
+  option {
+    color: black;
+  }
 }
 
 .wet-bulb__input-slider {

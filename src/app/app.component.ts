@@ -1,8 +1,9 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { filter, map, tap, pairwise, Observable, shareReplay } from 'rxjs';
 import { NgForm } from '@angular/forms';
-import { HumidUnit, Situation, TempUnit } from './app.types';
+import { HumidUnit, Situation, Temp, TempUnit, WetBulbForm } from './app.types';
 import { COLD_TEMP_BLURB, DANGEROUS_TEMP_BLURB, FATAL_TEMP_BLURB, SAFE_TEMP_BLURB } from './app.constants';
+import { convertToCelsius, convertToFahrenheit } from './helpers';
 
 @Component({
   selector: 'wet-bulb',
@@ -21,15 +22,17 @@ export class AppComponent implements OnInit {
   public tempUnits: TempUnit = "celsius";
   public humidUnits: HumidUnit = "relativeHumidity";
 
+  // Input Settings
+  public tempMin: number = 15;
+  public tempMax: number = 60;
+  public inputWidth: string = '1.2em';
+
   // Outputs
-  public wetBulbTemp$: Observable<number>;
+  public wetBulbTemp$: Observable<Temp>;
   public blurb$: Observable<Array<string>>;
   public emoji$: Observable<string>;
   public $fatalOpacity: Observable<number>;
   public $dangerousOpacity: Observable<number>;
-
-  // Config
-  private dp: number = 1;
 
   public ngOnInit(): void {
     // @ts-ignore
@@ -37,24 +40,38 @@ export class AppComponent implements OnInit {
       filter(v => !!v),
       pairwise(),
       // tap(v => console.log("Form change", v)),
-      map(([f_old, f]: [any, any]) => this.wetBulbTemperature(f.temperature, f.humidity)),
+      tap(([f_old, f_new]) => {
+        if (this.isUnitChange(f_old, f_new)) {
+          this.temperature = this.convertToUnit(f_new.temperature, f_new.tempUnits);
+          this.tempMin = this.convertToUnit(this.tempMin, f_new.tempUnits, 0);
+          this.tempMax = this.convertToUnit(this.tempMax, f_new.tempUnits, 0);
+          if (f_new.tempUnits === 'fahrenheit')
+            this.inputWidth = '1.8em';
+          else
+            this.inputWidth = '1.2em';
+        }
+      }),
+      map(([_, f_new]: [WetBulbForm, WetBulbForm]) => this.wetBulbTemperature(f_new)),
       shareReplay()
     );
 
-    this.$fatalOpacity = this.wetBulbTemp$.pipe(
+    const celsiusTemp$ = this.wetBulbTemp$.pipe(
+      map(t => t.unit === 'fahrenheit' ? convertToCelsius(t.temp) : t.temp)
+    );
+
+    this.$fatalOpacity = celsiusTemp$.pipe(
       map(t => 0.2 * (t - 30)),
       map(v => v <= 0 ? 0 : v >= 1 ? 1 : v),
       shareReplay()
-    )
+    );
 
-    this.$dangerousOpacity = this.wetBulbTemp$.pipe(
+    this.$dangerousOpacity = celsiusTemp$.pipe(
       map(t => 0.1 * (t - 20)),
       map(v => v <= 0 ? 0 : v >= 1 ? 1 : v),
       shareReplay()
-    )
+    );
 
-    // TODO: Will need to incorporate temperature units in here
-    let situation$: Observable<Situation> = this.wetBulbTemp$.pipe(
+    let situation$: Observable<Situation> = celsiusTemp$.pipe(
       map(this.wetBulbTempToSituation),
       shareReplay()
     );
@@ -88,8 +105,28 @@ export class AppComponent implements OnInit {
     );
   }
 
-  // Assuming temp is Celsius atm
-  private wetBulbTemperature(temp: number, humidity: number): number {
+  private isUnitChange(oldVal: WetBulbForm, newVal: WetBulbForm): boolean {
+    return (oldVal.tempUnits === 'celsius' && newVal.tempUnits === 'fahrenheit') ||
+      (oldVal.tempUnits === 'fahrenheit' && newVal.tempUnits === 'celsius')
+  }
+
+  private convertToUnit(temp: number, unit: TempUnit, dp: number|null = null): number {
+    if (unit === 'fahrenheit')
+      return convertToFahrenheit(temp, dp);
+    else if (unit === 'celsius')
+      return convertToCelsius(temp, dp)
+    else
+      throw `Incorrect units: ${temp}, ${unit}`;
+  }
+
+  private wetBulbTemperature(newVal: WetBulbForm): Temp {
+
+    let temp: number = newVal.temperature;
+    const humidity: number = newVal.humidity;
+    const tempUnit: TempUnit = newVal.tempUnits;
+
+    if (tempUnit === 'fahrenheit')
+      temp = convertToCelsius(temp)
 
     const const1: number = 0.151977;
     const const2: number = 8.313659;
@@ -102,7 +139,12 @@ export class AppComponent implements OnInit {
     const part2: number = Math.atan(temp + humidity) - Math.atan(humidity - const3);
     const part3: number = const4 * (humidity ** 1.5) * Math.atan(const5 * humidity);
 
-    return Math.floor((part1 + part2 + part3 - const6) * (10**this.dp)) / (10**this.dp);
+    let wetBulbTemp = part1 + part2 + part3 - const6;
+
+    if (tempUnit === 'fahrenheit')
+      wetBulbTemp = convertToFahrenheit(wetBulbTemp)
+
+    return { temp: wetBulbTemp, unit: tempUnit };
   }
 
   private wetBulbTempToSituation(temp: number): Situation {
