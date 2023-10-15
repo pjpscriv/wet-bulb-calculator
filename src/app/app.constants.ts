@@ -1,3 +1,12 @@
+// Colors
+export const SAFE_GRAD_START = '#191D47';
+export const SAFE_GRAD_END = '#4DBBDE';
+export const DANGEROUS_GRAD_START = '#FFBA52';
+export const DANGEROUS_GRAD_END = '#FF5252';
+export const FATAL_GRAD_START = '#FF5252';
+export const FATAL_GRAD_END = '#9747FF';
+
+// Blurbs
 export const SAFE_TEMP_BLURB: Array<string> = [
   "The wet-bulb temperature is within the safe range.",
   "Your powers of evaporative cooling will still be working perfectly."

@@ -1,9 +1,17 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, HostBinding, OnInit, ViewChild } from '@angular/core';
 import { filter, map, tap, pairwise, Observable, shareReplay } from 'rxjs';
 import { NgForm } from '@angular/forms';
 import { HumidUnit, Situation, Temp, TempUnit, WetBulbForm } from './app.types';
-import { COLD_TEMP_BLURB, DANGEROUS_TEMP_BLURB, FATAL_TEMP_BLURB, SAFE_TEMP_BLURB } from './app.constants';
+import {
+  COLD_TEMP_BLURB, DANGEROUS_GRAD_END, DANGEROUS_GRAD_START,
+  DANGEROUS_TEMP_BLURB, FATAL_GRAD_END, FATAL_GRAD_START,
+  FATAL_TEMP_BLURB, SAFE_GRAD_END,
+  SAFE_GRAD_START,
+  SAFE_TEMP_BLURB
+} from './app.constants';
 import { convertToCelsius, convertToFahrenheit } from './helpers';
+import chroma, { InterpolationMode } from 'chroma-js';
+
 
 @Component({
   selector: 'wet-bulb',
@@ -14,7 +22,7 @@ export class AppComponent implements OnInit {
 
   // @ts-ignore
   @ViewChild('inputs',{static: true}) ngForm: NgForm;
-  // @HostBinding('style.background') gradient: string = 'red'; //'linear-gradient(180deg, #191D47 0%, rgba(43.14, 174.28, 215.69, 0.84) 100%)';
+  @HostBinding('style.background') gradient: string = 'red';
 
   // Form values (Inputs)
   public temperature: number = 20;
@@ -27,12 +35,17 @@ export class AppComponent implements OnInit {
   public tempMax: number = 60;
   public inputWidth: string = '1.2em';
 
+  // Color scales
+  private colorMode: InterpolationMode = 'hcl';
+  private safeDangerousStartScale = chroma.scale([SAFE_GRAD_START, DANGEROUS_GRAD_START]).mode(this.colorMode);
+  private safeDangerousEndScale = chroma.scale([SAFE_GRAD_END, DANGEROUS_GRAD_END]).mode(this.colorMode);
+  private dangerousFatalStartScale = chroma.scale([DANGEROUS_GRAD_START, FATAL_GRAD_START]).mode(this.colorMode);
+  private dangerousFatalEndScale = chroma.scale([DANGEROUS_GRAD_END, FATAL_GRAD_END]).mode(this.colorMode);
+
   // Outputs
   public wetBulbTemp$: Observable<Temp>;
   public blurb$: Observable<Array<string>>;
   public emoji$: Observable<string>;
-  public $fatalOpacity: Observable<number>;
-  public $dangerousOpacity: Observable<number>;
 
   public ngOnInit(): void {
     // @ts-ignore
@@ -42,7 +55,7 @@ export class AppComponent implements OnInit {
       // tap(v => console.log("Form change", v)),
       tap(([f_old, f_new]) => {
         if (this.isUnitChange(f_old, f_new)) {
-          this.temperature = this.convertToUnit(f_new.temperature, f_new.tempUnits);
+          this.temperature = this.convertToUnit(f_new.temperature, f_new.tempUnits, 0);
           this.tempMin = this.convertToUnit(this.tempMin, f_new.tempUnits, 0);
           this.tempMax = this.convertToUnit(this.tempMax, f_new.tempUnits, 0);
           if (f_new.tempUnits === 'fahrenheit')
@@ -55,23 +68,9 @@ export class AppComponent implements OnInit {
       shareReplay()
     );
 
-    const celsiusTemp$ = this.wetBulbTemp$.pipe(
-      map(t => t.unit === 'fahrenheit' ? convertToCelsius(t.temp) : t.temp)
-    );
-
-    this.$fatalOpacity = celsiusTemp$.pipe(
-      map(t => 0.2 * (t - 30)),
-      map(v => v <= 0 ? 0 : v >= 1 ? 1 : v),
-      shareReplay()
-    );
-
-    this.$dangerousOpacity = celsiusTemp$.pipe(
-      map(t => 0.1 * (t - 20)),
-      map(v => v <= 0 ? 0 : v >= 1 ? 1 : v),
-      shareReplay()
-    );
-
-    let situation$: Observable<Situation> = celsiusTemp$.pipe(
+    let situation$: Observable<Situation> = this.wetBulbTemp$.pipe(
+      map(t => t.unit === 'fahrenheit' ? convertToCelsius(t.temp) : t.temp),
+      tap(t => this.gradient = this.tempToBackground(t)),
       map(this.wetBulbTempToSituation),
       shareReplay()
     );
@@ -149,5 +148,31 @@ export class AppComponent implements OnInit {
 
   private wetBulbTempToSituation(temp: number): Situation {
     return temp < 30 ? ( temp > -10 ? 'safe' : 'cold') : (temp > 35 ? 'fatal' : 'dangerous')
+  }
+
+  private tempToBackground(temp: number): string {
+    let start_color: string;
+    let end_color: string;
+
+    if (temp < 20) {
+      start_color = SAFE_GRAD_START;
+      end_color = SAFE_GRAD_END;
+
+    } else if (temp < 30) {
+      let progress =  0.1 * (temp - 20);
+      start_color = this.safeDangerousStartScale(progress).hex();
+      end_color = this.safeDangerousEndScale(progress).hex();
+
+    } else if (temp < 35) {
+      let progress =  0.2 * (temp - 30);
+      start_color = this.dangerousFatalStartScale(progress).hex();
+      end_color = this.dangerousFatalEndScale(progress).hex();
+
+    } else {
+      start_color = FATAL_GRAD_START;
+      end_color = FATAL_GRAD_END;
+    }
+
+    return `linear-gradient(180deg, ${start_color} 0%, ${end_color} 100%)`;
   }
 }
