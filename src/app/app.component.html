@@ -1,71 +1,147 @@
-<!-- HEADER -->
-<div class="wet-bulb__header">
-  <h1>WET BULB TEMPERATURE CALCULATOR</h1>
-  <div class="wet-bulb__header-subtitle">
-    <p>Originally inspired by <a href="https://www.omnicalculator.com/physics/wet-bulb">Julia Żuławińska’s</a> wet bulb calculator</p>
-    <p>This wet bulb calculator is designed to help you estimate the wet bulb temperature based on only two pieces of data - the temperature 🌡️ and the relative humidity 💧.</p>
+<div class="wet-bulb__calculator">
+
+  <!-- Header -->
+  <div class="wet-bulb__header">
+    <h1>WET BULB TEMPERATURE CALCULATOR</h1>
+    <div class="wet-bulb__header-subtitle">
+      <p>Originally inspired by <a href="https://www.omnicalculator.com/physics/wet-bulb">Julia Żuławińska’s</a> wet bulb calculator</p>
+      <p>This wet bulb calculator is designed to help you estimate the wet bulb temperature based on only two pieces of data - the temperature 🌡️ and the relative humidity 💧.</p>
+    </div>
   </div>
+
+
+  <!-- Inputs -->
+  <form #inputs="ngForm" class="wet-bulb__inputs">
+
+    <div class="wet-bulb__input">
+      <div class="wet-bulb__input-label">TEMP</div>
+      <div class="wet-bulb_input-group">
+        <input class="wet-bulb__input-number"
+          [(ngModel)]="temperature"
+          [style.width]="inputWidth"
+          type="number"
+          name="temperature"
+          min="{{tempMin}}" max="{{tempMax}}">
+        <select class="wet-bulb__input-unit"
+          name="tempUnits"
+          [(ngModel)]="tempUnits">
+          <option value="celsius">°C</option>
+          <option value="fahrenheit">°F</option>
+        </select>
+        <input class="wet-bulb__input-slider"
+          name="temperature"
+          [(ngModel)]="temperature"
+          type="range"
+          min="{{tempMin}}" max="{{tempMax}}">
+      </div>
+    </div>
+
+    <div class="wet-bulb__input">
+      <div class="wet-bulb__input-label">HUMIDITY</div>
+      <div class="wet-bulb_input-group">
+        <input class="wet-bulb__input-number"
+        [(ngModel)]="humidity"
+        [style.width]="inputWidth"
+        name="humidity"
+        type="number"
+        min="5" max="99">
+        <select class="wet-bulb__input-unit"
+          name="humidUnits"
+          [(ngModel)]="humidUnits">
+          <option value="relativeHumidity">%</option>
+        </select>
+        <input class="wet-bulb__input-slider"
+          name="humidity"
+          [(ngModel)]="humidity"
+          type="range"
+          min="5" max="99">
+      </div>
+    </div>
+
+  </form>
+
+  <!-- Output -->
+  <div class="wet-bulb__outputs">
+    <div class="wet-bulb__temp-label">WET BULB TEMP</div>
+    <div class="wet-bulb__temp-wrapper">
+      <div class="wet-bulb__temp">{{wetBulbTemp$ | async | temperature }}</div>
+      <div class="wet-bulb__emoji">{{emoji$ | async}}</div>
+    </div>
+    <div class="wet-bulb__blurb">
+      <p *ngFor="let sentence of (blurb$ | async)">{{sentence}}</p>
+    </div>
+  </div>
+
 </div>
 
+<div class="wet-bulb__description">
 
-<!-- INPUTS -->
-<form #inputs="ngForm" class="wet-bulb__inputs">
-
-  <div class="wet-bulb__input">
-    <div class="wet-bulb__input-label">TEMP</div>
-    <div class="wet-bulb_input-group">
-      <input class="wet-bulb__input-number"
-        [(ngModel)]="temperature"
-        [style.width]="inputWidth"
-        type="number"
-        name="temperature"
-        min="{{tempMin}}" max="{{tempMax}}">
-      <select class="wet-bulb__input-unit"
-        name="tempUnits"
-        [(ngModel)]="tempUnits">
-        <option value="celsius">°C</option>
-        <option value="fahrenheit">°F</option>
-      </select>
-      <input class="wet-bulb__input-slider"
-        name="temperature"
-        [(ngModel)]="temperature"
-        type="range"
-        min="{{tempMin}}" max="{{tempMax}}">
-    </div>
+  <div class="wet-bulb__description-links">
+    <a href="#what-is-it">WHAT IS WET BULB TEMPERATURE?</a>
+    <a href="#how-is-it-measured">HOW IS IT MEASURED?</a>
+    <a href="#why-is-it-important">WHY IS IT IMPORTANT?</a>
+    <a href="#sources">SOURCES</a>
   </div>
 
-  <div class="wet-bulb__input">
-    <div class="wet-bulb__input-label">HUMIDITY</div>
-    <div class="wet-bulb_input-group">
-      <input class="wet-bulb__input-number"
-       [(ngModel)]="humidity"
-       [style.width]="inputWidth"
-       name="humidity"
-       type="number"
-       min="5" max="99">
-      <select class="wet-bulb__input-unit"
-        name="humidUnits"
-        [(ngModel)]="humidUnits">
-        <option value="relativeHumidity">%</option>
-      </select>
-      <input class="wet-bulb__input-slider"
-        name="humidity"
-        [(ngModel)]="humidity"
-        type="range"
-        min="5" max="99">
-    </div>
-  </div>
+  <div class="wet-bulb__description-content">
+    <h3 id="what-is-it">WHAT IS ‘WET BULB TEMPERATURE’?</h3>
+    <p>
+      If you have ever been outside on a day where it’s 30°C and very humid, 
+      you’ll notice how different (and how much more uncomfortably hot) the day 
+      feels compared to a day where it’s 30°C but dry.
+      In both cases, the human body will try to cool itself by producing sweat, 
+      which evaporates and takes heat away. But when the humidity is high – 
+      meaning the air is already more saturated with water – evaporation is 
+      reduced, and we’re less able to effectively cool ourselves by sweating.
+    </p>
+    <p>
+      The Wet Bulb Temperature (WBT) is a measurement to help us understand how 
+      well we can cool ourselves down with sweating at that level of heat and 
+      humidity. The WBT is the coolest temperature the air can reach using 
+      evaporative cooling. 
+    </p>
 
-</form>
+    <h3 id="how-is-it-measured">HOW IS IT MEASURED?</h3>
+    <p>
+      The wet bulb temperature can be measured by wrapping a thermometer in a wet 
+      cloth and exposing it to the air. As water evaporates from the cloth, it 
+      cools the thermometer, giving the wet bulb reading. The greater the 
+      evaporation, the cooler the wet bulb temp, which reflects how much moisture 
+      the air can absorb [1]. And conversely the lesser the evaporation, the 
+      closer the wet bulb temp is to the dry bulb temp (the standard air 
+      temperature measurement we see on weather apps that doesn’t use humidity). 
+    </p>
 
-<!-- OUTPUT -->
-<div class="wet-bulb__outputs">
-  <div class="wet-bulb__temp-label">WET BULB TEMP</div>
-  <div class="wet-bulb__temp-wrapper">
-    <div class="wet-bulb__temp">{{wetBulbTemp$ | async | temperature }}</div>
-    <div class="wet-bulb__emoji">{{emoji$ | async}}</div>
+    <h3 id="why-is-it-important" >WHY IS IT IMPORTANT?</h3>
+    <p>
+      A comfortable wet-bulb temperature for humans is around 22 °C (70 °F). 
+      Wet-bulb temperatures above 30 °C (86 °F) quickly become very dangerous or 
+      even fatal. Research from 2022 found that the limit of what a young, 
+      healthy person can tolerate, or the critical wet-bulb temperature, was 
+      around 31.5 °C. [4] The researchers called this threshold “non-compensable 
+      heat stress”, as sweating cannot compensate for the extreme conditions. 
+      Without cooling aids, such as cold water, fans or air conditioning, death 
+      is likely within hours [3].
+    </p>
+    <p>
+      As we continue our trajectory as a planet towards around 2.7°C[5] of 
+      warming above pre-industrial levels, the frequency of life-threatening 
+      heat events with dangerous wet bulb temperatures have become and will 
+      continue to be more common: “The geographic range and frequency of 
+      non-compensable heat extremes will increase rapidly, given only moderate 
+      continued increase in global average temperatures. This implies that, in 
+      the near future, a substantial portion of the world’s population will be 
+      exposed to these non-compensable environmental conditions.” [3]
+    </p>
+
+    <h3 id="sources">SOURCES</h3>
+    <ol class="wet-bulb__description-sources">
+      <li id="source-1">Wet Bulb Temperature vs Wet Bulb Globe Temperature (WBGT)? Differences Explained. Colin Perry. 24 Aug 2021. </li>
+      <li id="source-1">Wet Bulb Calculator. Julia Żuławińska.  30 Jul 2024.</li>
+      <li id="source-1">Deadly humid heatwaves to spread rapidly as climate warms - study. Damian Carrington. 8 Sept 2023.</li>
+      <li id="source-1">Why you need to worry about the ‘wet-bulb temperature’. Jocelyn Timperley. 31 Jul 2022</li>
+      <li id="source-1">Climate Action Tracker (2024). 2100 Warming Projections: Emissions and expected warming based on pledges and current policies. Climate Analytics and NewClimate Institute. November 2024. </li>
+    </ol>
   </div>
-  <div class="wet-bulb__blurb">
-    <p *ngFor="let sentence of (blurb$ | async)">{{sentence}}</p>
-  </div>
+  
 </div>
