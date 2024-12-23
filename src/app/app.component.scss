@@ -163,8 +163,9 @@ wet-bulb:host {
 .wet-bulb__description-links {
   display: flex;
   flex-direction: column;
-  text-underline-offset: 2px;
-  padding-bottom: 2em;
+  text-underline-offset: 3px;
+  padding-bottom: 1em;
+  gap: 4px;
 
   a {
     color: white;
@@ -172,6 +173,10 @@ wet-bulb:host {
 }
 
 .wet-bulb__description-content {
+  h3 {
+    margin-top: 3em;
+  }
+
   &::-webkit-scrollbar {
     width: 8px;
   }
@@ -188,7 +193,7 @@ wet-bulb:host {
   @media screen and (min-width: $ui-switch-breakpoint) {
     height: calc(100vh - 25em);
     overflow-y: scroll;
-    padding-right: 4px;
+    padding-right: 8px;
   }
 }
 
