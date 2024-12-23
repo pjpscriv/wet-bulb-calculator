@@ -1,4 +1,4 @@
-$ui-switch-breakpoint: 950px;
+$ui-switch-breakpoint: 1000px;
 
 wet-bulb:host {
   display: flex;
@@ -145,7 +145,6 @@ wet-bulb:host {
 }
 
 .wet-bulb__blurb {
-  width: 268px;
   font-size: 20px;
   min-height: 15em;
 }
@@ -165,13 +164,41 @@ wet-bulb:host {
   display: flex;
   flex-direction: column;
   text-underline-offset: 2px;
+  padding-bottom: 2em;
 
   a {
     color: white;
   }
 }
 
+.wet-bulb__description-content {
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background-color: #ffffff44;
+    border-radius: 20px;
+    // border: 3px solid orange;
+  }
+
+  @media screen and (min-width: $ui-switch-breakpoint) {
+    height: calc(100vh - 25em);
+    overflow-y: scroll;
+  }
+}
+
 .wet-bulb__description-sources {
+  padding-left: 26px;
+
+  a {
+    color: white;
+  }
+
   li {
     counter-increment: item;
   }
