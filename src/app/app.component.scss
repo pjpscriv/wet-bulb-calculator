@@ -1,4 +1,5 @@
 $ui-switch-breakpoint: 1000px;
+$ui-slider-size: 28px;
 
 wet-bulb:host {
   display: flex;
@@ -101,16 +102,16 @@ wet-bulb:host {
   &::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 20px;
-    height: 20px;
+    width: $ui-slider-size;
+    height: $ui-slider-size;
+    border-radius: $ui-slider-size;
     background: white;
-    border-radius: 20px;
   }
 
   &::-moz-range-thumb {
-    width: 20px;
-    height: 20px;
-    border-radius: 20px;
+    width: $ui-slider-size;
+    height: $ui-slider-size;
+    border-radius: $ui-slider-size;
     border-color: white;
     background: white;
   }
@@ -147,6 +148,10 @@ wet-bulb:host {
 .wet-bulb__blurb {
   font-size: 20px;
   min-height: 12em;
+
+  @media screen and (min-width: $ui-switch-breakpoint) {
+    min-height: unset;
+  }
 }
 
 
