@@ -1,7 +1,7 @@
 import { Component, HostBinding, OnInit, ViewChild } from '@angular/core';
 import { filter, map, tap, pairwise, Observable, shareReplay } from 'rxjs';
 import { NgForm } from '@angular/forms';
-import { HumidUnit, Situation, Temp, TempUnit, WetBulbForm } from './app.types';
+import { Background, HumidUnit, Situation, Temp, TempUnit, WetBulbForm } from './app.types';
 import {
   COLD_TEMP_BLURB, DANGEROUS_GRAD_END, DANGEROUS_GRAD_START,
   DANGEROUS_TEMP_BLURB, FATAL_GRAD_END, FATAL_GRAD_START,
@@ -21,8 +21,8 @@ import chroma, { InterpolationMode } from 'chroma-js';
 export class AppComponent implements OnInit {
 
   // @ts-ignore
-  @ViewChild('inputs',{static: true}) ngForm: NgForm;
-  @HostBinding('style.background') gradient: string = 'red';
+  @ViewChild('inputs', {static: true}) ngForm: NgForm;
+  @HostBinding('style.background') background: string = 'red';
 
   // Form values (Inputs)
   public temperature: number = 20;
@@ -46,6 +46,7 @@ export class AppComponent implements OnInit {
   public wetBulbTemp$: Observable<Temp>;
   public blurb$: Observable<Array<string>>;
   public emoji$: Observable<string>;
+  public gradient$: Observable<string>;
 
   public ngOnInit(): void {
     // @ts-ignore
@@ -68,9 +69,18 @@ export class AppComponent implements OnInit {
       shareReplay()
     );
 
-    let situation$: Observable<Situation> = this.wetBulbTemp$.pipe(
+    let temperature$: Observable<number> = this.wetBulbTemp$.pipe(
       map(t => t.unit === 'fahrenheit' ? convertToCelsius(t.temp) : t.temp),
-      tap(t => this.gradient = this.tempToBackground(t)),
+      shareReplay()
+    );
+
+    this.gradient$ = temperature$.pipe(
+      map(t => this.tempToBackground(t)),
+      tap(b => this.background = b.endColor),
+      map(b => b.gradient)
+    );
+
+    let situation$: Observable<Situation> = temperature$.pipe(
       map(this.wetBulbTempToSituation),
       shareReplay()
     );
@@ -150,7 +160,7 @@ export class AppComponent implements OnInit {
     return temp < 30 ? ( temp > -10 ? 'safe' : 'cold') : (temp > 35 ? 'fatal' : 'dangerous')
   }
 
-  private tempToBackground(temp: number): string {
+  private tempToBackground(temp: number): Background {
     let start_color: string;
     let end_color: string;
 
@@ -173,6 +183,9 @@ export class AppComponent implements OnInit {
       end_color = FATAL_GRAD_END;
     }
 
-    return `linear-gradient(180deg, ${start_color} 0%, ${end_color} 100%)`;
+    return {
+      gradient: `linear-gradient(180deg, ${start_color} 0%, ${end_color} 100%)`,
+      endColor: end_color
+    };
   }
 }

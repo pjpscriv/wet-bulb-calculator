@@ -11,3 +11,7 @@ export type Temp = {
   temp: number,
   unit: TempUnit
 }
+export type Background = {
+  gradient: string,
+  endColor: string
+}
