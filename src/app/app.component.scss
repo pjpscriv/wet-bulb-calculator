@@ -12,6 +12,7 @@ wet-bulb:host {
 
   @media screen and (min-width: $ui-switch-breakpoint) {
     flex-direction: row;
+    justify-content: space-evenly;
   }
 }
 
