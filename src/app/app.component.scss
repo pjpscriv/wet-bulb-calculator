@@ -40,6 +40,7 @@ wet-bulb:host {
   h1 {
     font-size: 36px;
     font-weight: 600;
+    margin-bottom: 0px;
   }
 
   .wet-bulb__header-subtitle {
@@ -52,6 +53,22 @@ wet-bulb:host {
 
   a {
     color: white;
+  }
+
+  .wet-bulb__header-credits {
+    font-size: 12px;
+    margin-top: 0.5em;
+    margin-bottom: 1.5em;
+    color: #ffffffaa;
+
+    a {
+      color: #ffffffaa;
+    }
+
+    a:hover {
+      color: white;
+      text-decoration: none;
+    }
   }
 }
 
